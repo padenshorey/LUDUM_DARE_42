@@ -37,9 +37,15 @@ public class PlayerController : MonoBehaviour
 
     private float startScale;
 
+    public SpriteRenderer currentColor;
+    public Sprite[] colorSprites;
+    public Animator orbAnim;
+    public GameManager.ItemColor myColor;
+
     private void Start()
     {
         startScale = transform.localScale.x;
+        SetColor(GameManager.ItemColor.NONE);
     }
 
     private void FixedUpdate()
@@ -63,6 +69,11 @@ public class PlayerController : MonoBehaviour
             {
                 DoubleJump();
             }
+        }
+
+        if(Input.GetKeyDown(KeyCode.E))
+        {
+            Explode();
         }
 
         float dirX = Input.GetAxis("Horizontal");
@@ -93,9 +104,25 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void Explode()
+    {
+        Vector3 startPosition = transform.position;
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(new Vector2(transform.position.x, transform.position.y), 3f);
+
+        foreach(Collider2D hit in colliders)
+        {
+            if (hit.GetComponent<Rigidbody2D>() && hit.gameObject.tag == "Treasure")
+            {
+                Debug.Log("Adding explosive force to: " + hit.name);
+                hit.GetComponent<Rigidbody2D>().AddExplosionForce(1000f, startPosition, 25f);
+            }
+        }
+    }
+
     private void Jump()
     {
         animator.SetTrigger("Jump");
+        rigidbody2D.velocity = new Vector2(rigidbody2D.velocity.x, 0f);
         rigidbody2D.AddForce(new Vector2(0f, jumpPower));
         grounded = false;
         AudioManager.instance.PlaySFX(AudioManager.AudioSFX.Jump);
@@ -123,10 +150,18 @@ public class PlayerController : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.tag == "Wall" && !onWall)
+
         {
             onWall = true;
             rigidbody2D.velocity = new Vector2(0f, rigidbody2D.velocity.y);
             AudioManager.instance.PlaySFX(AudioManager.AudioSFX.Splat);
+        }
+        else if (collision.gameObject.tag == "Treasure")
+        {
+            if (myColor == collision.gameObject.GetComponent<Treasure>().color || myColor == GameManager.ItemColor.MULTI)
+            {
+                GameManager.instance.treasureGenerator.CashInTreasure(collision.gameObject.GetComponent<Treasure>());
+            }
         }
     }
 
@@ -138,4 +173,21 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public void SetColor(GameManager.ItemColor color)
+    {
+        if ((int)color < colorSprites.Length)
+        {
+            if (currentColor.sprite != colorSprites[(int)color])
+            {
+                currentColor.sprite = colorSprites[(int)color];
+                orbAnim.SetTrigger("NewColor");
+            }
+        }
+        else
+        {
+            currentColor.sprite = null;
+        }
+
+        myColor = color;
+    }
 }

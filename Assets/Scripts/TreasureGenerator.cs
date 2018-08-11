@@ -71,12 +71,17 @@ public class TreasureGenerator : MonoBehaviour
 
         spawnedTreasure.transform.position = new Vector3(Random.Range(xMin, xMax), spawnY, 0f);
         spawnedTreasure.transform.SetParent(treasureParent);
-        spawnedTreasure.transform.localScale = Vector3.one;
+
+        float randomScale = Random.Range(0.8f, 1f + (Time.time / 100f));
+        spawnedTreasure.transform.localScale = new Vector3(randomScale, randomScale, randomScale);
 
         timeOfLastSpawn = Time.time;
         currentTreasure.Add(spawnedTreasure.GetComponent<Treasure>());
-
-        GameManager.instance.AddPoints(1);
     }
 
+    public void CashInTreasure(Treasure t)
+    {
+        currentTreasure.Remove(t);
+        t.CashIn();
+    }
 }

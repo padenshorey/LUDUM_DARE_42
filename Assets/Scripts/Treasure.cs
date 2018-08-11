@@ -5,6 +5,8 @@ using UnityEngine;
 public class Treasure : MonoBehaviour {
 
     private AudioSource audioSource;
+    public GameManager.ItemColor color;
+    public int pointValue = 1;
 
     private void Awake()
     {
@@ -14,6 +16,14 @@ public class Treasure : MonoBehaviour {
     private void OnCollisionEnter2D(Collision2D collision)
     {
         audioSource.clip = AudioManager.instance.hits[Random.Range(0, AudioManager.instance.hits.Length)];
-        audioSource.Play();
+
+        if(Random.Range(0f, 1f) < 0.1f)
+            audioSource.Play();
+    }
+
+    public void CashIn()
+    {
+        GameManager.instance.AddPoints(pointValue);
+        Destroy(gameObject);
     }
 }

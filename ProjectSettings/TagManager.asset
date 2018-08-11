@@ -7,6 +7,7 @@ TagManager:
   - Ground
   - Wall
   - Platform
+  - Treasure
   layers:
   - Default
   - TransparentFX
@@ -17,7 +18,7 @@ TagManager:
   - 
   - 
   - Ground
-  - 
+  - Player
   - 
   - 
   - 
@@ -43,6 +44,9 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Treasure
+    uniqueID: 960102383
     locked: 0
   - name: Player
     uniqueID: 2550145285
