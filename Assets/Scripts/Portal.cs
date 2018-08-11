@@ -6,6 +6,35 @@ public class Portal : MonoBehaviour {
 
     public GameManager.ItemColor portalColor;
 
+    public float lifeSpan;
+
+    public void Setup(float life)
+    {
+        lifeSpan = life;
+        StartCoroutine(StartDeath());
+    }
+
+    IEnumerator StartDeath()
+    {
+        yield return new WaitForSeconds(lifeSpan);
+
+        GetComponent<Collider2D>().enabled = false;
+
+        GetComponent<Animator>().SetTrigger("Die");
+
+        GameManager.instance.portalGenerator.KillPortal(this);       
+    }
+
+    public void ActivateCollider()
+    {
+        GetComponent<Collider2D>().enabled = true;
+    }
+
+    public void Die()
+    {
+        Destroy(this.gameObject);
+    }
+
     public void OnTriggerEnter2D(Collider2D collision)
     {
         if(collision.gameObject.CompareTag("Player"))

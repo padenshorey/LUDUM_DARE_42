@@ -8,6 +8,7 @@ TagManager:
   - Wall
   - Platform
   - Treasure
+  - Ceiling
   layers:
   - Default
   - TransparentFX
@@ -47,6 +48,9 @@ TagManager:
     locked: 0
   - name: Treasure
     uniqueID: 960102383
+    locked: 0
+  - name: Portals
+    uniqueID: 1387182531
     locked: 0
   - name: Player
     uniqueID: 2550145285

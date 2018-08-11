@@ -12,8 +12,11 @@ public class GameManager : MonoBehaviour {
         NONE
     }
 
+    public float timeToDie = 5f;
+
     public Score scoreBoard;
     public TreasureGenerator treasureGenerator;
+    public PortalGenerator portalGenerator;
 
     public static GameManager instance = null;
     void Start()

@@ -8,6 +8,9 @@ public class Treasure : MonoBehaviour {
     public GameManager.ItemColor color;
     public int pointValue = 1;
 
+    public bool explodingAlready = false;
+
+
     private void Awake()
     {
         audioSource = GetComponent<AudioSource>();
@@ -24,6 +27,12 @@ public class Treasure : MonoBehaviour {
     public void CashIn()
     {
         GameManager.instance.AddPoints(pointValue);
+        Destroy(gameObject);
+    }
+
+    public void Explode()
+    {
+        explodingAlready = true;
         Destroy(gameObject);
     }
 }

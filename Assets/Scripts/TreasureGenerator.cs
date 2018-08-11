@@ -52,6 +52,87 @@ public class TreasureGenerator : MonoBehaviour
         }
     }
 
+    private int GetSpriteIndex(GameManager.ItemColor color, Sprite sprite)
+    {
+        int index = 0;
+        switch(color)
+        {
+            case GameManager.ItemColor.BLACK:
+                for(int i=0; i < blackTreasure.Count; i++)
+                {
+                    if(blackTreasure[i].GetComponent<SpriteRenderer>().sprite == sprite)
+                    {
+                        index = i;
+                        return index;
+                    }
+                }
+                break;
+            case GameManager.ItemColor.BLUE:
+                for (int i = 0; i < blueTreasure.Count; i++)
+                {
+                    if (blueTreasure[i].GetComponent<SpriteRenderer>().sprite == sprite)
+                    {
+                        index = i;
+                        return index;
+                    }
+                }
+                break;
+            case GameManager.ItemColor.RED:
+                for (int i = 0; i < redTreasure.Count; i++)
+                {
+                    if (redTreasure[i].GetComponent<SpriteRenderer>().sprite == sprite)
+                    {
+                        index = i;
+                        return index;
+                    }
+                }
+                break;
+        }
+
+        return index;
+    }
+
+    public void ExplodeTreasure(Treasure treasure, int pieces, Vector3 playerPosition)
+    {
+        if((treasure.transform.localScale.x / (float)pieces) + 0.1f < 0.5f)
+        {
+            // if the pieces will be too small, don't explode
+            return;
+        }
+
+        for (int i = 0; i < 2; i++)
+        {
+            GameObject spawnedTreasure;
+            switch (treasure.color)
+            {
+                case GameManager.ItemColor.BLACK:
+                    spawnedTreasure = Instantiate(blackTreasure[GetSpriteIndex(GameManager.ItemColor.BLACK, treasure.GetComponent<SpriteRenderer>().sprite)]);
+                    break;
+                case GameManager.ItemColor.BLUE:
+                    spawnedTreasure = Instantiate(blueTreasure[GetSpriteIndex(GameManager.ItemColor.BLUE, treasure.GetComponent<SpriteRenderer>().sprite)]);
+                    break;
+                case GameManager.ItemColor.RED:
+                    spawnedTreasure = Instantiate(redTreasure[GetSpriteIndex(GameManager.ItemColor.RED, treasure.GetComponent<SpriteRenderer>().sprite)]);
+                    break;
+                default:
+                    spawnedTreasure = null;
+                    break;
+            }
+
+            spawnedTreasure.transform.position = new Vector3(treasure.transform.position.x + (i-0.25f), treasure.transform.position.y + (i - 0.25f), treasure.transform.position.z);
+            spawnedTreasure.transform.SetParent(treasureParent);
+
+            float scale = (treasure.transform.localScale.x / (float)pieces) + 0.1f;
+            spawnedTreasure.transform.localScale = new Vector3(scale, scale, scale);
+
+            currentTreasure.Add(spawnedTreasure.GetComponent<Treasure>());
+            spawnedTreasure.GetComponent<Rigidbody2D>().AddExplosionForce(500f, playerPosition, 20f);
+        }
+
+        currentTreasure.Remove(treasure);
+        treasure.Explode();
+    }
+
     public void SpawnTreasure()
     {
         float whichTreasureToSpawn = Random.Range(0f, randomMax);
@@ -77,6 +158,9 @@ public class TreasureGenerator : MonoBehaviour
 
         timeOfLastSpawn = Time.time;
         currentTreasure.Add(spawnedTreasure.GetComponent<Treasure>());
+
+        float treasurePerSecond = 0.25f + (Time.time / 60);
+        spawnRate = 1f / treasurePerSecond;
     }
 
     public void CashInTreasure(Treasure t)

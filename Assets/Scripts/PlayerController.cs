@@ -107,14 +107,24 @@ public class PlayerController : MonoBehaviour
     private void Explode()
     {
         Vector3 startPosition = transform.position;
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(new Vector2(transform.position.x, transform.position.y), 3f);
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(new Vector2(transform.position.x, transform.position.y), 1f);
 
         foreach(Collider2D hit in colliders)
         {
-            if (hit.GetComponent<Rigidbody2D>() && hit.gameObject.tag == "Treasure")
+            Rigidbody2D rbToTest = hit.GetComponent<Rigidbody2D>();
+
+            if(rbToTest == null)
             {
-                Debug.Log("Adding explosive force to: " + hit.name);
-                hit.GetComponent<Rigidbody2D>().AddExplosionForce(1000f, startPosition, 25f);
+                rbToTest = hit.transform.parent.GetComponent<Rigidbody2D>();
+            }
+
+            if (rbToTest && hit.gameObject.tag == "Treasure")
+            {
+                if (!rbToTest.transform.GetComponent<Treasure>().explodingAlready)
+                {
+                    rbToTest.AddExplosionForce(500f, startPosition, 20f);
+                    GameManager.instance.treasureGenerator.ExplodeTreasure(rbToTest.transform.GetComponent<Treasure>(), 2, transform.position);
+                }
             }
         }
     }
