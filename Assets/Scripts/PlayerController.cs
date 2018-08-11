@@ -35,6 +35,13 @@ public class PlayerController : MonoBehaviour
     private bool hasDoubleJumped = false;
     private bool onWall = false;
 
+    private float startScale;
+
+    private void Start()
+    {
+        startScale = transform.localScale.x;
+    }
+
     private void FixedUpdate()
     {
         if(!grounded && Physics2D.OverlapCircle(bottom.position, groundRadius, whatIsGround) && rigidbody2D.velocity.y < 0f)
@@ -78,11 +85,11 @@ public class PlayerController : MonoBehaviour
 
         if(dirX < 0)
         {
-            transform.localScale = new Vector3(-0.2699787f, transform.localScale.y, transform.localScale.z);
+            transform.localScale = new Vector3(-startScale, transform.localScale.y, transform.localScale.z);
         }
         else if(dirX > 0)
         {
-            transform.localScale = new Vector3(0.2699787f, transform.localScale.y, transform.localScale.z);
+            transform.localScale = new Vector3(startScale, transform.localScale.y, transform.localScale.z);
         }
     }
 

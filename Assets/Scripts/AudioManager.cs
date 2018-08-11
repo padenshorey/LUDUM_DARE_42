@@ -12,16 +12,22 @@ public class AudioManager : MonoBehaviour {
         Land,
         Splat,
         Click,
-        Hover
+        Hover,
+        Score,
+        Hit
     }
 
     public AudioSource audioSource;
 
+    public AudioSource musicSource;
+
     public AudioClip jump;
     public AudioClip splat;
     public AudioClip[] landings;
+    public AudioClip[] hits;
     public AudioClip click;
     public AudioClip hover;
+    public AudioClip score;
 
     void Start () {
         if (instance == null)
@@ -47,13 +53,26 @@ public class AudioManager : MonoBehaviour {
             case AudioSFX.Hover:
                 clipToPlay = hover;
                 break;
+            case AudioSFX.Score:
+                clipToPlay = score;
+                break;
             case AudioSFX.Land:
                 clipToPlay = landings[Random.Range(0, landings.Length)];
+                break;
+            case AudioSFX.Hit:
+                clipToPlay = hits[Random.Range(0, hits.Length)];
                 break;
         }
 
         audioSource.volume = volume;
         audioSource.PlayOneShot(clipToPlay);
+    }
+
+    public void PlayMusic(AudioClip music)
+    {
+        musicSource.Stop();
+        musicSource.clip = music;
+        musicSource.Play();
     }
 
 }
