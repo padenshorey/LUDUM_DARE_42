@@ -24,6 +24,7 @@ public class EndGame : MonoBehaviour {
         }
 
         highScoreSign.SetActive(highScore);
+        if (highScore) AudioManager.instance.PlaySFX(AudioManager.AudioSFX.HighScore);
     }
 
     public void ResetScore()

@@ -102,9 +102,11 @@ public class TreasureGenerator : MonoBehaviour
         return index;
     }
 
+    public float minDestructionSize = 0.5f;
+
     public void ExplodeTreasure(Treasure treasure, int pieces, Vector3 playerPosition)
     {
-        if((treasure.transform.localScale.x / (float)pieces) + 0.1f < 0.5f)
+        if((treasure.transform.localScale.x / (float)pieces) + 0.1f < minDestructionSize)
         {
             // if the pieces will be too small, don't explode
             return;

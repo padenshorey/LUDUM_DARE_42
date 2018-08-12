@@ -21,6 +21,23 @@ public class MainMenu : MonoBehaviour {
         Setup();
     }
 
+    public void ReturnToMenu()
+    {
+        GetComponentInChildren<Animator>().SetTrigger("Return");
+
+        introComplete = true;
+        inMenu = true;
+
+        StartCoroutine(HideGame());
+    }
+
+    IEnumerator HideGame()
+    {
+        yield return new WaitForSeconds(1.5f);
+
+        if(inMenu) game.SetActive(false);
+    }
+
     private void Update()
     {
         if((Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space)) && !introComplete && inMenu)
@@ -69,6 +86,7 @@ public class MainMenu : MonoBehaviour {
     {
         if (introComplete)
         {
+            Application.OpenURL("http://www.padenshorey.com");
             introComplete = false;
         }
     }

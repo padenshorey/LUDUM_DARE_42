@@ -15,7 +15,10 @@ public class AudioManager : MonoBehaviour {
         Hover,
         Score,
         Hit,
-        Explode
+        Explode,
+        GameOver,
+        Bomb,
+        HighScore
     }
 
     public AudioSource audioSource;
@@ -30,6 +33,9 @@ public class AudioManager : MonoBehaviour {
     public AudioClip hover;
     public AudioClip score;
     public AudioClip[] explosions;
+    public AudioClip gameover;
+    public AudioClip bomb;
+    public AudioClip highScore;
 
     void Start () {
         if (instance == null)
@@ -58,6 +64,15 @@ public class AudioManager : MonoBehaviour {
             case AudioSFX.Score:
                 clipToPlay = score;
                 break;
+            case AudioSFX.HighScore:
+                clipToPlay = highScore;
+                break;
+            case AudioSFX.Bomb:
+                clipToPlay = bomb;
+                break;
+            case AudioSFX.GameOver:
+                clipToPlay = gameover;
+                break;
             case AudioSFX.Land:
                 clipToPlay = landings[Random.Range(0, landings.Length)];
                 break;
@@ -79,5 +94,31 @@ public class AudioManager : MonoBehaviour {
         musicSource.clip = music;
         musicSource.Play();
     }
+
+    /*
+    public AudioClip songFast;
+    public AudioClip songNormal;
+
+    public void PlayFasterSong(bool fast)
+    {
+        musicSource.Stop();
+        float timeToStart = 0;
+        if (fast && musicSource.clip != songFast)
+        {
+            timeToStart = musicSource.time * (2f / 3f);
+            musicSource.clip = songFast;
+            musicSource.time = timeToStart;
+        }
+        else if(musicSource.clip != songNormal)
+        {
+            timeToStart = musicSource.time * (3f / 2f);
+            musicSource.clip = songNormal;
+            musicSource.time = timeToStart;
+        }
+        musicSource.Play();
+    }
+    */
+
+
 
 }

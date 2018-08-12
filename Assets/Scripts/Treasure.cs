@@ -12,7 +12,7 @@ public class Treasure : MonoBehaviour {
 
     public float alarmStart;
     public bool onBoundry = false;
-
+    public bool isStuck = false;
     private void Awake()
     {
         audioSource = GetComponent<AudioSource>();
@@ -22,10 +22,18 @@ public class Treasure : MonoBehaviour {
     {
         if(onBoundry)
         {
+            if(Time.time > (alarmStart + 1f) && GameManager.instance.inGame && !isStuck)
+            {
+                isStuck = true;
+                GameManager.instance.mainCamera.GetComponent<Animator>().SetBool("Shaking", true);
+                GameManager.instance.mainCamera.GetComponent<AudioSource>().Play();
+                //AudioManager.instance.PlayFasterSong(true);
+            }
             if(Time.time > (alarmStart + GameManager.instance.timeToDie) && GameManager.instance.inGame)
             {
                 // GAME OVER
                 GameManager.instance.EndGame();
+                AudioManager.instance.PlaySFX(AudioManager.AudioSFX.GameOver);
             }
         }
     }

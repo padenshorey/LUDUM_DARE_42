@@ -20,6 +20,8 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public Animator bombReadyAnimator;
+
     public Transform bottom;
 
     [SerializeField]
@@ -53,6 +55,9 @@ public class PlayerController : MonoBehaviour
         respawnPosition = transform.position;
     }
 
+    public float explosionTimeout = 2f;
+    private float timeOfLastExplosion = 0;
+    private bool bombReady = true;
     private void FixedUpdate()
     {
         if(!grounded && Physics2D.OverlapCircle(bottom.position, groundRadius, whatIsGround) && rigidbody2D.velocity.y < 0f)
@@ -76,8 +81,20 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        if(Input.GetKeyDown(KeyCode.LeftShift))
+        if (!bombReady)
         {
+            if (Time.time > (timeOfLastExplosion + explosionTimeout))
+            {
+                bombReadyAnimator.SetTrigger("BombReady");
+                bombReady = true;
+                AudioManager.instance.PlaySFX(AudioManager.AudioSFX.Bomb);
+            }
+        }
+
+        if(Input.GetKeyDown(KeyCode.LeftShift) && bombReady)
+        {
+            bombReady = false;
+            timeOfLastExplosion = Time.time;
             Explode();
         }
 
@@ -115,6 +132,7 @@ public class PlayerController : MonoBehaviour
         {
             if(Time.time > (timeAllColorReceived + allColorPowerupDuration))
             {
+                AudioManager.instance.PlayMusic(normalMusic);
                 SetColor(GameManager.ItemColor.NONE);
             }
         }
@@ -213,9 +231,22 @@ public class PlayerController : MonoBehaviour
     public float timeAllColorReceived;
     public bool multiPowerupEnabled = false;
 
+    public AudioClip powerupMusic;
+    public AudioClip normalMusic;
 
     public void SetColor(GameManager.ItemColor color)
     {
+        if (color == GameManager.ItemColor.MULTI)
+        {
+            currentColor.sprite = colorSprites[(int)color];
+            orbAnim.SetTrigger("NewColor");
+            multiPowerupEnabled = true;
+            timeAllColorReceived = Time.time;
+            AudioManager.instance.PlayMusic(powerupMusic);
+            myColor = color;
+            return;
+        }
+
         if ((int)color < colorSprites.Length)
         {
             if (currentColor.sprite != colorSprites[(int)color])
@@ -227,6 +258,7 @@ public class PlayerController : MonoBehaviour
                 {
                     multiPowerupEnabled = true;
                     timeAllColorReceived = Time.time;
+                    AudioManager.instance.PlayMusic(powerupMusic);
                 }
                 else
                 {

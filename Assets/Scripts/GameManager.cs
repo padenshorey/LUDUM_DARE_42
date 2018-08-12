@@ -14,6 +14,9 @@ public class GameManager : MonoBehaviour {
 
     public float timeToDie = 5f;
 
+    public Camera mainCamera;
+    public MainMenu mainMenu;
+
     public Score scoreBoard;
     public TreasureGenerator treasureGenerator;
     public PortalGenerator portalGenerator;
@@ -25,11 +28,14 @@ public class GameManager : MonoBehaviour {
     public float TimeSinceStartOfRound { get { return Time.time - roundStartTime; }}
 
 
+    public GameObject quickRestart;
+
     public static GameManager instance = null;
 
     void Awake()
     {
         Screen.fullScreen = false;
+        mainCamera = Camera.main;
     }
 
     void Start()
@@ -49,7 +55,7 @@ public class GameManager : MonoBehaviour {
         {
             AudioManager.instance.PlaySFX(AudioManager.AudioSFX.Hit);
 
-            if (startGame.activeSelf)
+            if (startGame.activeSelf || instructions.activeSelf)
             {
                 StartGame();
             }
@@ -65,6 +71,15 @@ public class GameManager : MonoBehaviour {
             startGame.SetActive(instructions.activeSelf);
             instructions.SetActive(!instructions.activeSelf);
         }
+        else if(inGame && Input.GetKeyDown(KeyCode.R))
+        {
+            NewGame(true);
+        }
+        else if (!inGame && Input.GetKeyDown(KeyCode.Escape))
+        {
+            // go to main menu
+            //mainMenu.ReturnToMenu();
+        }
     }
 
     public void StartGame()
@@ -74,6 +89,8 @@ public class GameManager : MonoBehaviour {
         roundStartTime = Time.time;
         inGame = true;
         startGame.SetActive(false);
+        instructions.SetActive(false);
+        quickRestart.SetActive(true);
     }
 
     public EndGame endGame;
@@ -85,6 +102,11 @@ public class GameManager : MonoBehaviour {
         inGame = false;
         treasureGenerator.StopTreasureGenerator();
         portalGenerator.StopPortalGenerator();
+        quickRestart.SetActive(false);
+
+        mainCamera.GetComponent<Animator>().SetBool("Shaking", false);
+        //AudioManager.instance.PlayFasterSong(false);
+        GameManager.instance.mainCamera.GetComponent<AudioSource>().Pause();
 
         bool isHighScore = false;
         if(PlayerPrefs.GetInt("HighScore", 0) < scoreBoard.currentScore)
@@ -109,6 +131,7 @@ public class GameManager : MonoBehaviour {
         treasureGenerator.WipeTreasure();
         portalGenerator.WipePortals();
         player.RespawnPlayer();
+        player.SetColor(ItemColor.NONE);
         scoreBoard.ResetScore();
         scoreBoard.SetHighScore();
         endGame.gameObject.SetActive(false);
