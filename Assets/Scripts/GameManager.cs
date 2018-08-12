@@ -40,13 +40,30 @@ public class GameManager : MonoBehaviour {
             Destroy(gameObject);
 
         scoreBoard.SetHighScore();
+        startGame.SetActive(true);
     }
 
     public void Update()
     {
         if(Input.GetKeyDown(KeyCode.Return) && !inGame)
         {
-            NewGame(true);
+            AudioManager.instance.PlaySFX(AudioManager.AudioSFX.Hit);
+
+            if (startGame.activeSelf)
+            {
+                StartGame();
+            }
+            else
+            {
+                NewGame(false);
+            }
+        }
+        else if (Input.GetKeyDown(KeyCode.I) && !inGame)
+        {
+            AudioManager.instance.PlaySFX(AudioManager.AudioSFX.Hit);
+            endGame.gameObject.SetActive(false);
+            startGame.SetActive(instructions.activeSelf);
+            instructions.SetActive(!instructions.activeSelf);
         }
     }
 
@@ -56,9 +73,12 @@ public class GameManager : MonoBehaviour {
         portalGenerator.StartPortalGenerator();
         roundStartTime = Time.time;
         inGame = true;
+        startGame.SetActive(false);
     }
 
     public EndGame endGame;
+    public GameObject startGame;
+    public GameObject instructions;
 
     public void EndGame()
     {
@@ -90,7 +110,8 @@ public class GameManager : MonoBehaviour {
         scoreBoard.ResetScore();
         scoreBoard.SetHighScore();
         endGame.gameObject.SetActive(false);
-
+        currentColor = ItemColor.NONE;
+        this.startGame.SetActive(true);
         if (startGame) StartGame();
     }
 

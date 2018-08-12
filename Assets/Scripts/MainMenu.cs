@@ -14,10 +14,20 @@ public class MainMenu : MonoBehaviour {
     public GameObject game;
 
     private bool introComplete = false;
+    private bool inMenu = true;
 
     public void Start()
     {
         Setup();
+    }
+
+    private void Update()
+    {
+        if((Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space)) && !introComplete && inMenu)
+        {
+            introComplete = true;
+            GetComponentInChildren<Animator>().SetTrigger("Skip");
+        }
     }
 
     private void Setup()
@@ -43,6 +53,7 @@ public class MainMenu : MonoBehaviour {
             introComplete = false;
             GetComponentInChildren<Animator>().SetTrigger("Leave");
             game.SetActive(true);
+            inMenu = false;
         }
     }
 

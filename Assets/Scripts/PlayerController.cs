@@ -64,7 +64,7 @@ public class PlayerController : MonoBehaviour
             grounded = false;
         }
 
-        if(Input.GetKeyDown(KeyCode.W))
+        if(Input.GetKeyDown(KeyCode.Space))
         {
             if(grounded)
             {
@@ -76,7 +76,7 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        if(Input.GetKeyDown(KeyCode.Space))
+        if(Input.GetKeyDown(KeyCode.LeftShift))
         {
             Explode();
         }

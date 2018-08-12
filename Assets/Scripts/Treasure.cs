@@ -41,6 +41,7 @@ public class Treasure : MonoBehaviour {
     public void CashIn()
     {
         GameManager.instance.AddPoints(pointValue, color);
+        Spawner.instance.SpawnParticleEffect(transform.position, color);
         Destroy(gameObject);
     }
 
