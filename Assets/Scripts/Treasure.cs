@@ -10,10 +10,24 @@ public class Treasure : MonoBehaviour {
 
     public bool explodingAlready = false;
 
+    public float alarmStart;
+    public bool onBoundry = false;
 
     private void Awake()
     {
         audioSource = GetComponent<AudioSource>();
+    }
+
+    private void Update()
+    {
+        if(onBoundry)
+        {
+            if(Time.time > (alarmStart + GameManager.instance.timeToDie) && GameManager.instance.inGame)
+            {
+                // GAME OVER
+                GameManager.instance.EndGame();
+            }
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -26,7 +40,7 @@ public class Treasure : MonoBehaviour {
 
     public void CashIn()
     {
-        GameManager.instance.AddPoints(pointValue);
+        GameManager.instance.AddPoints(pointValue, color);
         Destroy(gameObject);
     }
 
@@ -34,5 +48,15 @@ public class Treasure : MonoBehaviour {
     {
         explodingAlready = true;
         Destroy(gameObject);
+    }
+
+    public void FixedUpdate()
+    {
+        // just in case they break through the barriers
+        if(transform.position.y < -10f)
+        {
+            GameManager.instance.treasureGenerator.currentTreasure.Remove(this);
+            Explode();
+        }
     }
 }

@@ -14,7 +14,8 @@ public class AudioManager : MonoBehaviour {
         Click,
         Hover,
         Score,
-        Hit
+        Hit,
+        Explode
     }
 
     public AudioSource audioSource;
@@ -28,6 +29,7 @@ public class AudioManager : MonoBehaviour {
     public AudioClip click;
     public AudioClip hover;
     public AudioClip score;
+    public AudioClip[] explosions;
 
     void Start () {
         if (instance == null)
@@ -61,6 +63,9 @@ public class AudioManager : MonoBehaviour {
                 break;
             case AudioSFX.Hit:
                 clipToPlay = hits[Random.Range(0, hits.Length)];
+                break;
+            case AudioSFX.Explode:
+                clipToPlay = explosions[Random.Range(0, explosions.Length)];
                 break;
         }
 

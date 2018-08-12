@@ -8,8 +8,13 @@ public class Score : MonoBehaviour {
     public SpriteRenderer[] currentDigits;
     public SpriteRenderer[] highScoreDigits;
 
-    int currentScore = 0;
-    int highScore = 0;
+    public int currentScore = 0;
+    public int highScore = 0;
+
+    public void ResetCurrentScore()
+    {
+        currentScore = 0;
+    }
 
     public void AddToScore(int pointsToAdd)
     {
@@ -35,6 +40,7 @@ public class Score : MonoBehaviour {
 
     public void ResetScore()
     {
+        currentScore = 0;
         for(int i = 0; i < currentDigits.Length; i++)
         {
             currentDigits[i].sprite = digits[0];
@@ -43,6 +49,16 @@ public class Score : MonoBehaviour {
 
     public void SetHighScore()
     {
+        int value = PlayerPrefs.GetInt("HighScore", 0);
+        int digitCounter = 1;
 
+        while (value > 0)
+        {
+            int digit = value % 10;
+
+            highScoreDigits[highScoreDigits.Length - digitCounter].sprite = digits[digit];
+            digitCounter++;
+            value /= 10;
+        }
     }
 }

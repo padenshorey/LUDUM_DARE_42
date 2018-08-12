@@ -44,6 +44,16 @@ public class TreasureGenerator : MonoBehaviour
         canSpawnTreasure = false;
     }
 
+    public void WipeTreasure()
+    {
+        foreach(Treasure t in currentTreasure)
+        {
+            Destroy(t.gameObject);
+        }
+
+        currentTreasure.Clear();
+    }
+
     private void FixedUpdate()
     {
         if (Time.time > (timeOfLastSpawn + spawnRate) && canSpawnTreasure)
@@ -153,15 +163,18 @@ public class TreasureGenerator : MonoBehaviour
         spawnedTreasure.transform.position = new Vector3(Random.Range(xMin, xMax), spawnY, 0f);
         spawnedTreasure.transform.SetParent(treasureParent);
 
-        float randomScale = Random.Range(0.8f, 1f + (Time.time / 100f));
+        float randomScale = Random.Range(minScale, (minScale + scaleVariation) + (GameManager.instance.TimeSinceStartOfRound / 100f));
         spawnedTreasure.transform.localScale = new Vector3(randomScale, randomScale, randomScale);
 
         timeOfLastSpawn = Time.time;
         currentTreasure.Add(spawnedTreasure.GetComponent<Treasure>());
 
-        float treasurePerSecond = 0.25f + (Time.time / 60);
+        float treasurePerSecond = 0.25f + (GameManager.instance.TimeSinceStartOfRound / 60);
         spawnRate = 1f / treasurePerSecond;
     }
+
+    public float minScale = 0.8f;
+    public float scaleVariation = 0.5f;
 
     public void CashInTreasure(Treasure t)
     {

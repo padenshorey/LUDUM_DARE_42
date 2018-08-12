@@ -36,12 +36,34 @@ public class PortalGenerator : MonoBehaviour
     private float ChanceAll { get { return (chanceAll / (chanceColor + chanceAll + chanceNone)) * randomMax; } }
     private float ChanceNone { get { return (chanceNone / (chanceColor + chanceAll + chanceNone)) * randomMax; } }
 
+    private bool canSpawnPortal = false;
+
     private void FixedUpdate()
     {
-        if (Time.time > (timeOfLastSpawn + spawnRate))
+        if (Time.time > (timeOfLastSpawn + spawnRate) && canSpawnPortal)
         {
             SpawnPortal();
         }
+    }
+
+    public void StartPortalGenerator()
+    {
+        canSpawnPortal = true;
+    }
+
+    public void StopPortalGenerator()
+    {
+        canSpawnPortal = false;
+    }
+
+    public void WipePortals()
+    {
+        foreach (GameObject p in currentPortals)
+        {
+            Destroy(p);
+        }
+
+        currentPortals.Clear();
     }
 
     public void SpawnPortal()
@@ -81,7 +103,7 @@ public class PortalGenerator : MonoBehaviour
         spawnedPortal.transform.localScale = Vector3.one;
         spawnedPortal.GetComponent<Portal>().Setup(Random.Range(5f, 15f));
 
-        float portalsPerMinute = 9f + (Time.time / 60);
+        float portalsPerMinute = 9f + (GameManager.instance.TimeSinceStartOfRound / 60);
         spawnRate = 60f / portalsPerMinute;
         //spawnRate += Random.Range(minSpawnRate, maxSpawnRate);
 

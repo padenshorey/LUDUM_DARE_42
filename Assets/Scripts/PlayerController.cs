@@ -32,6 +32,8 @@ public class PlayerController : MonoBehaviour
     float groundRadius = 0.15f;
     public LayerMask whatIsGround;
 
+    public GameObject explosion;
+
     private bool hasDoubleJumped = false;
     private bool onWall = false;
 
@@ -42,10 +44,13 @@ public class PlayerController : MonoBehaviour
     public Animator orbAnim;
     public GameManager.ItemColor myColor;
 
+    private Vector3 respawnPosition;
+
     private void Start()
     {
         startScale = transform.localScale.x;
         SetColor(GameManager.ItemColor.NONE);
+        respawnPosition = transform.position;
     }
 
     private void FixedUpdate()
@@ -59,7 +64,7 @@ public class PlayerController : MonoBehaviour
             grounded = false;
         }
 
-        if(Input.GetKeyDown(KeyCode.Space))
+        if(Input.GetKeyDown(KeyCode.W))
         {
             if(grounded)
             {
@@ -71,7 +76,7 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        if(Input.GetKeyDown(KeyCode.E))
+        if(Input.GetKeyDown(KeyCode.Space))
         {
             Explode();
         }
@@ -104,10 +109,31 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public void Update()
+    {
+        if(multiPowerupEnabled)
+        {
+            if(Time.time > (timeAllColorReceived + allColorPowerupDuration))
+            {
+                SetColor(GameManager.ItemColor.NONE);
+            }
+        }
+    }
+
+    public void RespawnPlayer()
+    {
+        rigidbody2D.velocity = Vector2.zero;
+        transform.position = respawnPosition;
+    }
+
     private void Explode()
     {
         Vector3 startPosition = transform.position;
         Collider2D[] colliders = Physics2D.OverlapCircleAll(new Vector2(transform.position.x, transform.position.y), 1f);
+
+        explosion.SetActive(true);
+        explosion.GetComponent<Animator>().SetTrigger("Explode");
+        AudioManager.instance.PlaySFX(AudioManager.AudioSFX.Explode);
 
         foreach(Collider2D hit in colliders)
         {
@@ -183,6 +209,11 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public float allColorPowerupDuration = 5f;
+    public float timeAllColorReceived;
+    public bool multiPowerupEnabled = false;
+
+
     public void SetColor(GameManager.ItemColor color)
     {
         if ((int)color < colorSprites.Length)
@@ -191,11 +222,22 @@ public class PlayerController : MonoBehaviour
             {
                 currentColor.sprite = colorSprites[(int)color];
                 orbAnim.SetTrigger("NewColor");
+
+                if(color == GameManager.ItemColor.MULTI)
+                {
+                    multiPowerupEnabled = true;
+                    timeAllColorReceived = Time.time;
+                }
+                else
+                {
+                    multiPowerupEnabled = false;
+                }
             }
         }
         else
         {
             currentColor.sprite = null;
+            multiPowerupEnabled = false;
         }
 
         myColor = color;

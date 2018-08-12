@@ -7,6 +7,7 @@ public class Portal : MonoBehaviour {
     public GameManager.ItemColor portalColor;
 
     public float lifeSpan;
+    private bool isDying = false;
 
     public void Setup(float life)
     {
@@ -17,6 +18,8 @@ public class Portal : MonoBehaviour {
     IEnumerator StartDeath()
     {
         yield return new WaitForSeconds(lifeSpan);
+
+        if (isDying) yield return null;
 
         GetComponent<Collider2D>().enabled = false;
 
@@ -40,6 +43,14 @@ public class Portal : MonoBehaviour {
         if(collision.gameObject.CompareTag("Player"))
         {
             collision.GetComponent<PlayerController>().SetColor(portalColor);
+
+            isDying = true;
+
+            GetComponent<Collider2D>().enabled = false;
+
+            GetComponent<Animator>().SetTrigger("Use");
+
+            GameManager.instance.portalGenerator.KillPortal(this);
         }
     }
 }

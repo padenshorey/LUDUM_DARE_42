@@ -12,37 +12,38 @@ public class Ceiling : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Treasure"))
         {
-            if (!treasureStuckInCeiling.Contains(collision.transform.parent.gameObject))
+            if (!treasureStuckInCeiling.Contains(collision.rigidbody.gameObject))
             {
-                treasureStuckInCeiling.Add(collision.transform.parent.gameObject);
-                if (treasureStuckInCeiling.Count <= 1) timeStuckInCeiling = Time.time;
+                // new treasure
+                collision.gameObject.GetComponent<Treasure>().alarmStart = Time.time;
+                collision.gameObject.GetComponent<Treasure>().onBoundry = true;
+
+                treasureStuckInCeiling.Add(collision.rigidbody.gameObject);
+                /*
+                if (treasureStuckInCeiling.Count <= 1)
+                {
+                    //Debug.Log("Resetting Timer Stuck");
+                    timeStuckInCeiling = Time.time;
+                }
                 stuckInCeiling = true;
+                */
             }
         }
     }
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.gameObject.transform.CompareTag("Treasure"))
+        if (collision.rigidbody.gameObject.CompareTag("Treasure"))
         {
-            treasureStuckInCeiling.Remove(collision.transform.parent.gameObject);
+            collision.gameObject.GetComponent<Treasure>().onBoundry = false;
+
+            treasureStuckInCeiling.Remove(collision.rigidbody.gameObject);
+            /*
             if (treasureStuckInCeiling.Count < 1)
             {
                 stuckInCeiling = false;
             }
-        }
-    }
-
-    private void Update()
-    {
-        if (stuckInCeiling)
-        {
-            if (Time.time > (timeStuckInCeiling + GameManager.instance.timeToDie))
-            {
-                // GAME OVER
-                Debug.Log("<color=orange>YOU LOSE</color>");
-                stuckInCeiling = false;
-            }
+            */
         }
     }
 }
