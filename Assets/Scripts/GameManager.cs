@@ -97,6 +97,8 @@ public class GameManager : MonoBehaviour {
         treasureGenerator.WipeTreasure();
         portalGenerator.WipePortals();
 
+        player.SetColor(ItemColor.NONE);
+
         // SHOW GAME OVER SCREEN
         endGame.gameObject.SetActive(true);
         endGame.SetCurrentScore(scoreBoard.currentScore, isHighScore);

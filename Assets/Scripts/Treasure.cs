@@ -32,10 +32,11 @@ public class Treasure : MonoBehaviour {
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        audioSource.clip = AudioManager.instance.hits[Random.Range(0, AudioManager.instance.hits.Length)];
-
-        if(Random.Range(0f, 1f) < 0.1f)
+        if (collision.gameObject.tag == "Player")
+        {
+            audioSource.clip = AudioManager.instance.hits[Random.Range(0, AudioManager.instance.hits.Length)];
             audioSource.Play();
+        }
     }
 
     public void CashIn()
